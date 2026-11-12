@@ -1,0 +1,8 @@
+/target
+/.bak
+/.scratch
+__pycache__/
+*.pyc
+*.tmp
+*.tmp.*
+handoff.md

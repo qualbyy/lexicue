@@ -1,0 +1,157 @@
+[general]
+history_limit = 200
+context_bytes = 30
+scrollback_lines = 2000
+language = "ru"
+
+[resolver]
+aliases_rc = [
+    "/home/qualbyy/.bashrc",
+    "/home/qualbyy/.zshrc",
+]
+user_aliases = "/home/qualbyy/.config/lexicue/aliases.toml"
+dictionary_dirs = [
+    "/home/qualbyy/.cache/tldr",
+    "/home/qualbyy/.local/share/tldr",
+]
+context_markers = [
+    "Cargo.toml",
+    "package.json",
+    "go.mod",
+    "pyproject.toml",
+    "Makefile",
+    "Dockerfile",
+]
+max_candidates = 8
+history_bonus = 2.5
+
+[llm]
+enabled = true
+provider = "gemini"
+model = "gemini-2.5-flash"
+endpoint = "https://generativelanguage.googleapis.com/v1beta"
+api_key = "AQ.Ab8RN6JK5m0jkZVPOxKhLqDvGEI_roxmbENtkFdQv_jwCxNQ6A"
+api_key_env = "GEMINI_API_KEY"
+timeout_ms = 25000
+explicit_trigger = "??"
+max_candidates = 5
+system_prompt = ""
+system_prompt_file = ""
+
+[cache]
+path = "/home/qualbyy/.cache/lexicue/cache.jsonl"
+max_entries = 2000
+
+[guard]
+tui_titles = [
+    "vim",
+    "nvim",
+    "vi",
+    "htop",
+    "top",
+    "less",
+    "more",
+    "man",
+    "ssh",
+    "tmux",
+    "fzf",
+    "lazygit",
+]
+password_prompt_markers = [
+    "password:",
+    "passphrase:",
+    "[sudo]",
+    "Enter passphrase",
+]
+force_passthrough_keys = [
+    "f1",
+    "f2",
+    "f3",
+    "f4",
+    "f5",
+    "f6",
+    "f7",
+    "f8",
+    "f9",
+    "f10",
+    "f11",
+    "f12",
+]
+
+[safety]
+confirm_dangerous = true
+blocked_patterns = [
+    "rm -rf /",
+    "dd if=.* of=/dev/",
+    'mkfs\.',
+    "chmod -R 777 /",
+    ":(){ :|:& };:",
+]
+system_paths = [
+    "/",
+    "/etc",
+    "/usr",
+    "/bin",
+    "/sbin",
+    "/boot",
+    "/lib",
+    "/var",
+    "/home",
+]
+
+[theme]
+background = "#252527"
+foreground = "#e4e4e4"
+accent = "#d4d4d4"
+warning = "#d9a05b"
+danger = "#e06c75"
+selection = "#363639"
+overlay_bg = "#2c2c2f"
+font_size = 14.0
+prompt_icon = "spark"
+
+[island]
+enabled = true
+timer_threshold_ms = 2000
+status_ttl_ms = 4000
+port_ttl_secs = 45
+port_revalidate_secs = 5
+max_ports = 4
+max_snippets = 3
+
+[island.snippets]
+cargo = [
+    "cargo test",
+    "cargo run",
+    "cargo clippy",
+]
+node = [
+    "npm test",
+    "npm run dev",
+    "npm run build",
+]
+go = [
+    "go test ./...",
+    "go run .",
+    "go vet ./...",
+]
+python = [
+    "pytest",
+    "python -m compileall .",
+    "pip check",
+]
+make = [
+    "make",
+    "make test",
+    "make check",
+]
+docker = [
+    "docker compose up",
+    "docker build .",
+    "docker ps",
+]
+git = [
+    "git status",
+    "git diff",
+    "git log --oneline -n 5",
+]

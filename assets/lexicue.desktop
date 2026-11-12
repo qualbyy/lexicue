@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Lexicue
+GenericName=Terminal Emulator
+Comment=Linux-first terminal with intent-based command resolution
+Exec=lexicue
+Icon=utilities-terminal
+Terminal=false
+Categories=System;TerminalEmulator;
+StartupNotify=true
+Keywords=terminal;shell;command;
