@@ -245,11 +245,17 @@ fn parse_build_line(line: &str) -> Option<ProgressEvent> {
     if low.starts_with("finished ") || low.starts_with("running `") {
         return Some(ProgressEvent::Clear);
     }
-    let kind = ["compiling", "checking", "building", "linking", "documenting"]
-        .into_iter()
-        .find(|k| low.starts_with(k))?;
+    let kind = [
+        "compiling",
+        "checking",
+        "building",
+        "linking",
+        "documenting",
+    ]
+    .into_iter()
+    .find(|k| low.starts_with(k))?;
     let stage = &trimmed[..kind.len()];
-    let detail = match trimmed[kind.len()..].trim().split_whitespace().next() {
+    let detail = match trimmed[kind.len()..].split_whitespace().next() {
         Some(name) => format!("{stage} {name}"),
         None => stage.to_string(),
     };
@@ -1104,14 +1110,14 @@ impl LexicueApp {
             crate::contracts::IslandAction::OpenPort(port) => {
                 let url = format!("http://localhost:{port}");
                 match std::process::Command::new("xdg-open").arg(&url).spawn() {
-                    Ok(_) => self.set_toast(&format!("Opened {url}")),
-                    Err(_) => self.set_toast(&format!("Failed to open {url} (missing xdg-open)")),
+                    Ok(_) => self.set_toast(format!("Opened {url}")),
+                    Err(_) => self.set_toast(format!("Failed to open {url} (missing xdg-open)")),
                 }
             }
             crate::contracts::IslandAction::OpenLink(url) => {
                 match std::process::Command::new("xdg-open").arg(&url).spawn() {
                     Ok(_) => {
-                        self.set_toast(&format!("Opened {}", crate::ui::truncate_text(&url, 32)))
+                        self.set_toast(format!("Opened {}", crate::ui::truncate_text(&url, 32)))
                     }
                     Err(_) => self.set_toast("Failed to open link (missing xdg-open)"),
                 }
@@ -1406,7 +1412,7 @@ impl LexicueApp {
                 self.set_toast("Config reloaded");
             }
             Err(e) => {
-                self.set_toast(&format!("Config reload failed: {e}"));
+                self.set_toast(format!("Config reload failed: {e}"));
             }
         }
     }
@@ -1980,7 +1986,7 @@ impl LexicueApp {
                     return UiIntent::Noop;
                 }
                 // No AI/Alias match: this is a plain shell line, so run it as typed.
-                return self.submit_command(&line, vec![b'\r']);
+                self.submit_command(&line, vec![b'\r'])
             }
             KeyInput::CtrlEnter => {
                 // Interrupt: drop hints/overlay, clear the line and stop the running command.
@@ -2028,7 +2034,7 @@ impl LexicueApp {
                         }
                         let bytes =
                             if self.cursor_at_end && cand.rendered.starts_with(&self.line_buf) {
-                                cand.rendered[self.line_buf.len()..].as_bytes().to_vec()
+                                cand.rendered.as_bytes()[self.line_buf.len()..].to_vec()
                             } else {
                                 let mut buf = Vec::with_capacity(cand.rendered.len() + 1);
                                 buf.push(0x15);

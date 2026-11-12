@@ -284,8 +284,7 @@ impl ScreenModel for Vt100Screen {
                                     // DSR: CSI 6n -> cursor position report. External
                                     // wrappers (fastfetch-window) block while waiting for
                                     // this reply; without it they wedge the tty in raw mode.
-                                    let (cur_row, cur_col) =
-                                        self.parser.screen().cursor_position();
+                                    let (cur_row, cur_col) = self.parser.screen().cursor_position();
                                     self.kitty.replies.push(
                                         format!("\x1b[{};{}R", cur_row + 1, cur_col + 1)
                                             .into_bytes(),
@@ -588,7 +587,8 @@ impl ScreenModel for Vt100Screen {
         if joined.len() <= max_bytes {
             return joined;
         }
-        let keep_bytes = max_bytes.saturating_sub(6); // "[…]\n" length
+        // "[…]\n" length
+        let keep_bytes = max_bytes.saturating_sub(6);
         // Slice on a UTF-8 boundary or a multi-byte glyph panics.
         let mut start = joined.len().saturating_sub(keep_bytes);
         while start < joined.len() && !joined.is_char_boundary(start) {

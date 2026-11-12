@@ -99,10 +99,8 @@ fn is_system_path(path: &str, system_paths: &[String]) -> bool {
         if norm == sys_norm {
             return true;
         }
-        if sys_norm != "/" && sys_norm != "/home" {
-            if norm.starts_with(&format!("{sys_norm}/")) {
-                return true;
-            }
+        if sys_norm != "/" && sys_norm != "/home" && norm.starts_with(&format!("{sys_norm}/")) {
+            return true;
         }
     }
     false

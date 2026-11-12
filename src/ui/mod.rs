@@ -402,6 +402,9 @@ fn icon_button(
     resp
 }
 
+// Shortcut: theme colors passed explicitly keep call sites uniform with the other pill helpers;
+// upgrade only if the palette itself changes.
+#[allow(clippy::too_many_arguments)]
 fn choice_pill(
     ui: &mut egui::Ui,
     label: &str,
@@ -795,7 +798,7 @@ pub fn draw(app: &mut LexicueApp, ctx: &egui::Context) {
                         if !app.snapshot.alternate_screen
                             && (pos.y < avail_rect.top() || pos.y > avail_rect.bottom())
                         {
-                            let ready = app.last_drag_scroll.is_none_or(|t| {
+                            let ready = app.last_drag_scroll.map_or(true, |t| {
                                 t.elapsed() >= std::time::Duration::from_millis(42)
                             });
                             if ready {
@@ -1036,54 +1039,54 @@ pub fn draw(app: &mut LexicueApp, ctx: &egui::Context) {
                 cmd_badge.as_ref(),
                 None | Some(crate::contracts::CommandBadge::Running { .. })
             );
-        let active_pill: Option<(egui::Color32, String, Option<Option<u8>>)> =
-            if let Some(tp) = transfer.as_ref().filter(|_| transfer_first) {
-                Some((
-                    accent,
-                    format_transfer_label(tp.percent, tp.detail.as_deref()),
-                    Some(tp.percent),
-                ))
-            } else if let Some(cmd_badge) = cmd_badge {
-                Some(match cmd_badge {
-                    crate::contracts::CommandBadge::Running { elapsed } => {
-                        (accent, format!("Running {}s", elapsed.as_secs()), None)
-                    }
-                    crate::contracts::CommandBadge::Succeeded { duration } => {
-                        (accent, format!("Done {}s", duration.as_secs()), None)
-                    }
-                    crate::contracts::CommandBadge::Failed {
-                        duration,
-                        exit_code,
-                        fix_available,
-                    } => {
-                        let code_str = exit_code
-                            .map(|c| format!("exit {c}"))
-                            .unwrap_or_else(|| "fail".into());
-                        let label = if fix_available {
-                            format!("Failed {}s · {} · Fix", duration.as_secs(), code_str)
-                        } else {
-                            format!("Failed {}s · {}", duration.as_secs(), code_str)
-                        };
-                        (danger, label, None)
-                    }
-                })
-            } else if let Some(txt) = loading_text.as_deref() {
-                let clean = txt.trim_start_matches(|c: char| {
-                    ('\u{2800}'..='\u{28ff}').contains(&c) || c == ' '
-                });
-                Some((accent, clean.to_string(), None))
-            } else if let Some(port) = app.active_ports().first() {
-                Some((accent, format!(":{}", port.port), None))
-            } else if passthrough {
-                let app_label = state_text
-                    .as_deref()
-                    .filter(|s| *s != "passthrough")
-                    .map(|s| truncate_text(s, 18))
-                    .unwrap_or_else(|| "RAW".to_string());
-                Some((warn, app_label, None))
-            } else {
-                None
-            };
+        let active_pill: Option<(egui::Color32, String, Option<Option<u8>>)> = if let Some(tp) =
+            transfer.as_ref().filter(|_| transfer_first)
+        {
+            Some((
+                accent,
+                format_transfer_label(tp.percent, tp.detail.as_deref()),
+                Some(tp.percent),
+            ))
+        } else if let Some(cmd_badge) = cmd_badge {
+            Some(match cmd_badge {
+                crate::contracts::CommandBadge::Running { elapsed } => {
+                    (accent, format!("Running {}s", elapsed.as_secs()), None)
+                }
+                crate::contracts::CommandBadge::Succeeded { duration } => {
+                    (accent, format!("Done {}s", duration.as_secs()), None)
+                }
+                crate::contracts::CommandBadge::Failed {
+                    duration,
+                    exit_code,
+                    fix_available,
+                } => {
+                    let code_str = exit_code
+                        .map(|c| format!("exit {c}"))
+                        .unwrap_or_else(|| "fail".into());
+                    let label = if fix_available {
+                        format!("Failed {}s · {} · Fix", duration.as_secs(), code_str)
+                    } else {
+                        format!("Failed {}s · {}", duration.as_secs(), code_str)
+                    };
+                    (danger, label, None)
+                }
+            })
+        } else if let Some(txt) = loading_text.as_deref() {
+            let clean = txt
+                .trim_start_matches(|c: char| ('\u{2800}'..='\u{28ff}').contains(&c) || c == ' ');
+            Some((accent, clean.to_string(), None))
+        } else if let Some(port) = app.active_ports().first() {
+            Some((accent, format!(":{}", port.port), None))
+        } else if passthrough {
+            let app_label = state_text
+                .as_deref()
+                .filter(|s| *s != "passthrough")
+                .map(|s| truncate_text(s, 18))
+                .unwrap_or_else(|| "RAW".to_string());
+            Some((warn, app_label, None))
+        } else {
+            None
+        };
 
         let tag_font = egui::FontId::proportional(10.5);
         let badge_target_w = if let Some((dot_color, ref tag, ref bar_pct)) = active_pill {

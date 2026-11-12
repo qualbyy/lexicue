@@ -87,16 +87,16 @@ fn alt_glyph(ui: &egui::Ui, font_id: &egui::FontId, ch: char, cell_w: f32) -> Op
 /// Hand-picked narrow stand-ins for the icons fastfetch/neofetch emit.
 fn nerd_alt(ch: char) -> Option<char> {
     Some(match u32::from(ch) {
-        0xf17c => 'w',  // Linux
-        0xf313 => ']',  // Arch/EndeavourOS
-        0xf607 => '♥',  // EndeavourOS
-        0xf0ad => '*',  // CJK-style wrench
-        0xf0e7 => '*',  // speed/uptime
+        0xf17c => 'w',                   // Linux
+        0xf313 => ']',                   // Arch/EndeavourOS
+        0xf607 => '♥',                   // EndeavourOS
+        0xf0ad => '*',                   // CJK-style wrench
+        0xf0e7 => '*',                   // speed/uptime
         0xf17a | 0xf489 | 0xf108 => '>', // terminal / window
-        0xf114 => '$',  // shell
-        0xf07c => '|',  // log
-        0xf0c9 => '≡',  // list
-        0xf538 => 'V',  // version
+        0xf114 => '$',                   // shell
+        0xf07c => '|',                   // log
+        0xf0c9 => '≡',                   // list
+        0xf538 => 'V',                   // version
         _ => return None,
     })
 }
@@ -425,8 +425,8 @@ pub fn link_at(
     let raw: String = (start..=end).map(cell_ch).collect();
     let lead_chars = raw.chars().take_while(|c| matches!(c, '(' | '[')).count() as u16;
     let trimmed = raw
-        .trim_start_matches(|c| matches!(c, '(' | '['))
-        .trim_end_matches(|c| matches!(c, '.' | ',' | ';' | ':' | ')' | ']'));
+        .trim_start_matches(['(', '['])
+        .trim_end_matches(['.', ',', ';', ':', ')', ']']);
     if trimmed.is_empty() {
         return None;
     }
@@ -477,6 +477,9 @@ fn lerp_color(a: egui::Color32, b: egui::Color32, a_weight: u16) -> egui::Color3
     egui::Color32::from_rgb(ch(a.r(), b.r()), ch(a.g(), b.g()), ch(a.b(), b.b()))
 }
 
+// Shortcut: positional args beat a builder struct for a hot-path painter helper; upgrade
+// only if another arg is needed.
+#[allow(clippy::too_many_arguments)]
 fn draw_inline_cells(
     painter: &egui::Painter,
     origin: egui::Pos2,
